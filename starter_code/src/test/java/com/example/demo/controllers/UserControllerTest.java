@@ -7,6 +7,7 @@ import com.example.demo.model.persistence.repositories.UserRepository;
 import com.example.demo.model.requests.CreateUserRequest;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -34,7 +35,7 @@ public class UserControllerTest {
     }
 
     @Test
-    public void testCreateUserHappyPath() throws Exception {
+    public void testCreateUserSuccess() throws Exception {
         when(bCryptPasswordEncoder.encode("testPassword")).thenReturn("testPassword");
 
         CreateUserRequest createUserRequest = new CreateUserRequest();
@@ -45,12 +46,42 @@ public class UserControllerTest {
         ResponseEntity<User> response = userController.createUser(createUserRequest);
 
         assertNotNull(response);
-        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
 
         User user = response.getBody();
         assertNotNull(user);
         assertEquals(0, user.getId());
         assertEquals("test", user.getUsername());
         assertEquals("testPassword", user.getPassword());
+    }
+
+    @Test
+    public void testCreateUserFailConfirm() throws Exception {
+        when(bCryptPasswordEncoder.encode("testPassword")).thenReturn("testPassword");
+
+        CreateUserRequest createUserRequest = new CreateUserRequest();
+        createUserRequest.setUsername("test");
+        createUserRequest.setPassword("testPassword");
+        createUserRequest.setConfirmPassword("confirmPassword");
+
+        ResponseEntity<User> response = userController.createUser(createUserRequest);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    public void testCreateUserFailShortPassword() throws Exception {
+        when(bCryptPasswordEncoder.encode("testPassword")).thenReturn("testPassword");
+
+        CreateUserRequest createUserRequest = new CreateUserRequest();
+        createUserRequest.setUsername("test");
+        createUserRequest.setPassword("pass");
+        createUserRequest.setConfirmPassword("pass");
+
+        ResponseEntity<User> response = userController.createUser(createUserRequest);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 }
