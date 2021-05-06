@@ -45,7 +45,7 @@ public class CartController {
 		}
 		Optional<Item> item = itemRepository.findById(request.getItemId());
 		if (!item.isPresent()) {
-			logger.info("Error while adding to cart. Cannot find an itme: id={}", request.getItemId());
+			logger.info("Error while adding to cart. Cannot find an item: id={}", request.getItemId());
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
 		Cart cart = user.getCart();
@@ -58,18 +58,22 @@ public class CartController {
 	
 	@PostMapping("/removeFromCart")
 	public ResponseEntity<Cart> removeFromcart(@RequestBody ModifyCartRequest request) {
+		logger.info("Removing from cart: request={}", request);
 		User user = userRepository.findByUsername(request.getUsername());
-		if(user == null) {
+		if (user == null) {
+			logger.error("Error while adding to cart. Cannot find a user: username={}", request.getUsername());
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
 		Optional<Item> item = itemRepository.findById(request.getItemId());
-		if(!item.isPresent()) {
+		if (!item.isPresent()) {
+			logger.info("Error while adding to cart. Cannot find an item: id={}", request.getItemId());
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
 		Cart cart = user.getCart();
 		IntStream.range(0, request.getQuantity())
 			.forEach(i -> cart.removeItem(item.get()));
 		cartRepository.save(cart);
+		logger.info("After the removal, cart contains numberOfItems={} with total={}", cart.getItems().size(), cart.getTotal());
 		return ResponseEntity.ok(cart);
 	}
 		
