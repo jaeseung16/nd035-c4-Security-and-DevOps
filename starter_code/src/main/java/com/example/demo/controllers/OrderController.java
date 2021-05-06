@@ -44,10 +44,14 @@ public class OrderController {
 	
 	@GetMapping("/history/{username}")
 	public ResponseEntity<List<UserOrder>> getOrdersForUser(@PathVariable String username) {
+		logger.info("Looking for orders for username={}", username);
 		User user = userRepository.findByUsername(username);
-		if(user == null) {
+		if (user == null) {
+			logger.error("Cannot find a user: username={}", username);
 			return ResponseEntity.notFound().build();
 		}
-		return ResponseEntity.ok(orderRepository.findByUser(user));
+		List<UserOrder> userOrderList = orderRepository.findByUser(user);
+		logger.info("Found {} orders for username={}", userOrderList.size(), username);
+		return ResponseEntity.ok(userOrderList);
 	}
 }
