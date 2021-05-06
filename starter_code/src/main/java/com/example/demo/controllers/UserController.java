@@ -47,6 +47,7 @@ public class UserController {
 	
 	@PostMapping("/create")
 	public ResponseEntity<User> createUser(@RequestBody CreateUserRequest createUserRequest) {
+		logger.info("Creating a user: username={}", createUserRequest.getUsername());
 		User user = new User();
 		user.setUsername(createUserRequest.getUsername());
 		Cart cart = new Cart();
@@ -55,7 +56,7 @@ public class UserController {
 
 		if (createUserRequest.getPassword().length() < 7 ||
 				!createUserRequest.getPassword().equals(createUserRequest.getConfirmPassword())) {
-			logger.error("Error with user password. Cannot create user {}", createUserRequest.getUsername());
+			logger.error("Error with user password. Cannot create a user: username={}", createUserRequest.getUsername());
 			return ResponseEntity.badRequest().build();
 		}
 		user.setPassword(bCryptPasswordEncoder.encode(createUserRequest.getPassword()));
@@ -63,6 +64,7 @@ public class UserController {
 		user.setSalt(createSalt());
 
 		userRepository.save(user);
+		logger.info("Created a user: username={}", user.getUsername());
 		return ResponseEntity.ok(user);
 	}
 
