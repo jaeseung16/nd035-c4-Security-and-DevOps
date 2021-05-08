@@ -40,12 +40,12 @@ public class CartController {
 		logger.info("Adding to cart: request={}", request);
 		User user = userRepository.findByUsername(request.getUsername());
 		if (user == null) {
-			logger.error("Error while adding to cart. Cannot find a user: username={}", request.getUsername());
+			logger.warn("Cannot process request. There is no user with username={}", request.getUsername());
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
 		Optional<Item> item = itemRepository.findById(request.getItemId());
 		if (!item.isPresent()) {
-			logger.info("Error while adding to cart. Cannot find an item: id={}", request.getItemId());
+			logger.warn("Cannot process request. There is no item with itemId={}", request.getItemId());
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
 		Cart cart = user.getCart();
@@ -61,12 +61,12 @@ public class CartController {
 		logger.info("Removing from cart: request={}", request);
 		User user = userRepository.findByUsername(request.getUsername());
 		if (user == null) {
-			logger.error("Error while adding to cart. Cannot find a user: username={}", request.getUsername());
+			logger.warn("Cannot process request. There is no user with username={}", request.getUsername());
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
 		Optional<Item> item = itemRepository.findById(request.getItemId());
 		if (!item.isPresent()) {
-			logger.info("Error while adding to cart. Cannot find an item: id={}", request.getItemId());
+			logger.warn("Cannot process request. There is no item with itemId={}", request.getItemId());
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 		}
 		Cart cart = user.getCart();

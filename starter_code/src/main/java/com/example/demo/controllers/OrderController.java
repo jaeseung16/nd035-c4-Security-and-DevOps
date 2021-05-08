@@ -33,7 +33,7 @@ public class OrderController {
 		logger.info("Submitting an order for username={}", username);
 		User user = userRepository.findByUsername(username);
 		if (user == null) {
-			logger.error("Error while submitting an order. Cannot find a user: username={}", username);
+			logger.warn("Cannot submit an order. There is no user with username={}", username);
 			return ResponseEntity.notFound().build();
 		}
 		UserOrder order = UserOrder.createFromCart(user.getCart());
@@ -47,7 +47,7 @@ public class OrderController {
 		logger.info("Looking for orders for username={}", username);
 		User user = userRepository.findByUsername(username);
 		if (user == null) {
-			logger.error("Cannot find a user: username={}", username);
+			logger.warn("Cannot find orders. There is no user with username={}", username);
 			return ResponseEntity.notFound().build();
 		}
 		List<UserOrder> userOrderList = orderRepository.findByUser(user);
